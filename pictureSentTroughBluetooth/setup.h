@@ -71,6 +71,8 @@ void doBoringSetupStuff(){
   config.pin_reset = RESET_GPIO_NUM;
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG; 
+
+  config.grab_mode=CAMERA_GRAB_LATEST; //fix for green pictures
   
   if(psramFound()){
     config.frame_size = FRAMESIZE_UXGA; // FRAMESIZE_ + QVGA|CIF|VGA|SVGA|XGA|SXGA|UXGA
