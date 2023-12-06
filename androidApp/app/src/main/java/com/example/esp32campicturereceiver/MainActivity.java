@@ -15,11 +15,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.Manifest;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothAdapter bluetoothAdapter;
     BluetoothDevice ESP32CAMdevice;
     TextView tv;
+    ImageView iv;
     BluetoothSocket socket;
 
     @SuppressLint("MissingInflatedId")
@@ -44,9 +47,10 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(receiver, filter);
 
         tv = findViewById(R.id.textView1);
+        iv = findViewById(R.id.imageView);
         Log.d(TAG, "checking permissions scan and connect...");
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) ==PackageManager.PERMISSION_GRANTED &&
-        ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) ==PackageManager.PERMISSION_GRANTED)
+                ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) ==PackageManager.PERMISSION_GRANTED)
         {
             // You can use the API that requires the permission.
             Log.d(TAG, "    permissions OK");
@@ -144,23 +148,33 @@ public class MainActivity extends AppCompatActivity {
                     ESP32CAMdevice = device;
                     tv.append("\n"+deviceName+" : found ! trying to connect...");
                     bluetoothAdapter.cancelDiscovery();
-                try {
-                    socket = ESP32CAMdevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                    socket.connect();
-                    Handler handler = new Handler(){
-                        public void handleMessage(Message msg){
-                            Log.d(TAG, "msg received");
-                            tv.append((String)msg.obj);
-                        }
-                    };
-                    ConnectedThread connectedThread = new ConnectedThread(socket, handler);
-                    connectedThread.start();
-                    Log.d(TAG, "Connexion was sucessfull");
-                    tv.append("\nconnexion was succesfull. messages will display below...");
-                } catch (IOException e) {
-                    Log.d(TAG,"problem with creating RFCOMM socket");
-                    throw new RuntimeException(e);
-                }}
+                    try {
+                        socket = ESP32CAMdevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                        socket.connect();
+                        Handler handler = new Handler(){
+                            public void handleMessage(Message msg){
+
+
+
+                                if(msg.arg2==1){ // receiving an image
+                                    Log.d(TAG,"handler has detected picture arriving");
+                                    iv.setImageBitmap((Bitmap) msg.obj);
+                                }
+                                else{ // receiving text
+                                    Log.d(TAG, "text msg received");
+
+                                    tv.append((String)msg.obj);
+                                }
+                            }
+                        };
+                        ConnectedThread connectedThread = new ConnectedThread(socket, handler);
+                        connectedThread.start();
+                        Log.d(TAG, "Connexion was sucessfull");
+                        tv.append("\nconnexion was succesfull. messages will display below...");
+                    } catch (IOException e) {
+                        Log.d(TAG,"problem with creating RFCOMM socket");
+                        throw new RuntimeException(e);
+                    }}
 
                 else{
                     tv.append("\n"+deviceName);
