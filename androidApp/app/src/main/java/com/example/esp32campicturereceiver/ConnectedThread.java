@@ -104,7 +104,13 @@ public class ConnectedThread extends Thread{
                     //1st step getting the size of the image
                     Log.d(TAG,"getting into picture reception mode");
                     intoPictureReceptionMode=true;
-                    sizeOfTheImage =Integer.parseInt( readMessage.split(",",2)[1]);
+                    try{
+                        sizeOfTheImage =Integer.parseInt( readMessage.split(",",2)[1]);
+                    }
+                    catch (Exception e){
+                        Log.d(TAG,"wasn't able to extract size of the incoming picture, will switch to text reception mode");
+                        intoPictureReceptionMode=false;
+                    }
                     readMessage=""; // to not get into this condition on the next iteration
                 }
             } catch (IOException e) {
