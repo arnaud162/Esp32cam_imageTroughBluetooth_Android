@@ -5,6 +5,10 @@ int pictureNumber = 0;
 void setup() {
   
   doBoringSetupStuff();
+
+
+      
+
   Serial.begin(115200);
   SerialBT.begin(device_name); //Bluetooth device name
   Serial.printf("The device with name \"%s\" is started.\nNow you can pair it with Bluetooth!\n", device_name.c_str());
@@ -17,9 +21,11 @@ void setup() {
 void loop() {
   if (Serial.available()) {
     String input = Serial.readString();
-    if (input == "p\n"){
+    Serial.print(input);
+    Serial.write("\n");
+    if (input.indexOf("p") ==0){
       Serial.write("will take a photo, send it trough bluetooth and save it to SD card");
-      SerialBT.print("picture arriving...\n");
+      
       camera_fb_t * fb = NULL;
   
       // Take Picture with Camera
@@ -32,10 +38,13 @@ void loop() {
 
 
       //sending the picture trouh bluetooth
+      SerialBT.print("picture arriving,"+String(fb->len));
+            //SerialBT.print("picture arriving...\n");
+
       SerialBT.write(fb->buf, fb->len);
       SerialBT.print("finished sending picture.\n");
 
-      // Path where new picture will be saved in SD Card
+      // Path where new picture wilçkl be saved in SD Card
       String path = "/picture" + String(pictureNumber) +".jpg";
 
       fs::FS &fs = SD_MMC; 
@@ -54,11 +63,8 @@ void loop() {
       file.close();
       esp_camera_fb_return(fb); 
 
-      // Turns off the ESP32-CAM white on-board LED (flash) connected to GPIO 4
-    pinMode(4, OUTPUT);
-    digitalWrite(4, LOW);
-    rtc_gpio_hold_en(GPIO_NUM_4);
-      }
+ 
+    }
     
     //SerialBT.write(Serial.read());
     SerialBT.print(input);
