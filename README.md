@@ -1,1 +1,3 @@
-Main : a picture is sent trough bluetooth; app is able do decode and display it.
+Just pull repo with android studio "get from VCS"
+
+Code for ESP32 : inside "ESP32CAMcode" folder
