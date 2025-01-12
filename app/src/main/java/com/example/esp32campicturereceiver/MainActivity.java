@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     BluetoothDevice ESP32CAMdevice;
     TextView tv;
     ImageView iv;
-    BluetoothSocket socket;
+    BluetoothSocket socket = null;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 @SuppressLint("MissingPermission") String deviceName = device.getName();
-                if (deviceName != null) {
+                if (deviceName != null && socket==null) {
                     if (deviceName.contains("ESP32")){
                         ESP32CAMdevice = device;
                         tv.append("\n"+deviceName+" : found ! trying to connect...");
