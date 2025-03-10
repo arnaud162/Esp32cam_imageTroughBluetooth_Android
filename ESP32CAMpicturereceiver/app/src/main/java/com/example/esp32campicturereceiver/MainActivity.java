@@ -162,10 +162,11 @@ public class MainActivity extends AppCompatActivity {
                             throw new RuntimeException(e);
                         }
                     }
-                }
 
-                else{
-                    tv.append("\n"+deviceName);
+
+                    else{
+                        tv.append("\n"+deviceName);
+                    }
                 }
             }
         }
