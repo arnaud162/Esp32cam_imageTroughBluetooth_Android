@@ -1,8 +1,8 @@
 # Esp32cam_imageTroughBluetooth_Android
 Esp32cam_imageTroughBluetooth_Android
 
-v0.1 :  ESP32-CAM:      takes a picture and stores it to an SD card. Code copied from https://RandomNerdTutorials.com/esp32-cam-take-photo-save-microsd-card
+v0.1 : just two examples, 
 
-        smartphone :    if ESP32-CAM has the program SerialToSerialBT.ino ( https://github.com/espressif/arduino-esp32/blob/master/libraries/BluetoothSerial/examples/SerialToSerialBT/SerialToSerialBT.ino )
-        
-                        the smartphone will automatically connect and start displaying messages
+one for taking a picture and saving it to a SD card, from https://randomnerdtutorials.com/esp32-cam-take-photo-save-microsd-card/
+
+one for sending text messages. to receive on android use app from kai morich https://play.google.com/store/apps/details?id=de.kai_morich.serial_bluetooth_terminal&hl=en&pli=1
