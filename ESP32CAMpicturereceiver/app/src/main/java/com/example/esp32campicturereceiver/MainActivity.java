@@ -25,7 +25,6 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.UUID;
 
-import kotlinx.coroutines.android.HandlerDispatcher;
 
 public class MainActivity extends AppCompatActivity {
     String TAG = "bluetooth setup";
@@ -140,27 +139,30 @@ public class MainActivity extends AppCompatActivity {
                 // object and its info from the Intent.
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 @SuppressLint("MissingPermission") String deviceName = device.getName();
-                if (deviceName.contains("ESP32")){
-                    ESP32CAMdevice = device;
-                    tv.append("\n"+deviceName+" : found ! trying to connect...");
-                    bluetoothAdapter.cancelDiscovery();
-                try {
-                    socket = ESP32CAMdevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                    socket.connect();
-                    Handler handler = new Handler(){
-                        public void handleMessage(Message msg){
-                            Log.d(TAG, "msg received");
-                            tv.append((String)msg.obj);
+                if (deviceName != null){
+                    if (deviceName.contains("ESP32")){
+                        ESP32CAMdevice = device;
+                        tv.append("\n"+deviceName+" : found ! trying to connect...");
+                        bluetoothAdapter.cancelDiscovery();
+                        try {
+                            socket = ESP32CAMdevice.createInsecureRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                            socket.connect();
+                            Handler handler = new Handler(){
+                                public void handleMessage(Message msg){
+                                    Log.d(TAG, "msg received");
+                                    tv.append((String)msg.obj);
+                                }
+                            };
+                            ConnectedThread connectedThread = new ConnectedThread(socket, handler);
+                            connectedThread.start();
+                            Log.d(TAG, "Connexion was sucessfull");
+                            tv.append("\nconnexion was succesfull. messages will display below...");
+                        } catch (IOException e) {
+                            Log.d(TAG,"problem with creating RFCOMM socket");
+                            throw new RuntimeException(e);
                         }
-                    };
-                    ConnectedThread connectedThread = new ConnectedThread(socket, handler);
-                    connectedThread.start();
-                    Log.d(TAG, "Connexion was sucessfull");
-                    tv.append("\nconnexion was succesfull. messages will display below...");
-                } catch (IOException e) {
-                    Log.d(TAG,"problem with creating RFCOMM socket");
-                    throw new RuntimeException(e);
-                }}
+                    }
+                }
 
                 else{
                     tv.append("\n"+deviceName);
